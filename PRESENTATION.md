@@ -2,15 +2,11 @@
 
 A short walkthrough of how the product was researched, designed, and shipped.
 
----
 
 ## The problem
 
 Build a product experience that helps a user prove ownership of a domain, understand the verification process, when it fails, and recover from mistakes.
 
-<!-- screenshot: home / product pitch -->
-
----
 
 ## Day 1 — Research
 
@@ -41,7 +37,6 @@ https://docs.cloud.google.com/identity/docs/how-to/verify-domain#troubleshoot
 - How do we handle failures and duplicate claims on the same domain?
 - With all that friction — how do we keep the UX smooth?
 
----
 
 ## Day 2 — Architecture
 
@@ -78,8 +73,6 @@ Short on time → **Vercel + Next.js + Supabase**.
 }
 ```
 
----
-
 ## Day 3 — UX
 
 ### Flow
@@ -95,17 +88,11 @@ Add domain → show TXT instructions → user confirms → DNS lookup
    Failure → clear message + guides + “wait up to 72h”
 ```
 
-**Unauthenticated:** understand the process, registrar guides<img width="732" height="536" alt="Screenshot 2026-08-06 at 18 05 48" src="https://github.com/user-attachments/assets/79384d58-5ff1-4fe0-abe5-81508239f1b6" />
-.  
+**Unauthenticated:** understand the process, registrar guides
 **Authenticated:** add domains, regenerate tokens, verify, manage the list.
-
-<!-- screenshot: protected workspace / add domain -->
-
-<!-- screenshot: DNS help / registrar guides -->
 
 Design principle: friction sits in DNS (unavoidable); the app should reduce everything else — clear copy, repeatable token display, and actionable failure messages.
 
----
 
 ## Day 4 — Development
 
