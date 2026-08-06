@@ -95,7 +95,8 @@ Add domain → show TXT instructions → user confirms → DNS lookup
    Failure → clear message + guides + “wait up to 72h”
 ```
 
-**Unauthenticated:** understand the process, registrar guides, troubleshooting.  
+**Unauthenticated:** understand the process, registrar guides<img width="732" height="536" alt="Screenshot 2026-08-06 at 18 05 48" src="https://github.com/user-attachments/assets/79384d58-5ff1-4fe0-abe5-81508239f1b6" />
+.  
 **Authenticated:** add domains, regenerate tokens, verify, manage the list.
 
 <!-- screenshot: protected workspace / add domain -->
@@ -111,6 +112,9 @@ Design principle: friction sits in DNS (unavoidable); the app should reduce ever
 Started from the **Next.js + Supabase** Vercel boilerplate. Region chosen near where most of the team sits (good enough for a demo).
 
 ### Data layer
+
+<img width="771" height="567" alt="Screenshot 2026-08-06 at 18 06 02" src="https://github.com/user-attachments/assets/65723fec-c99b-4c15-87a4-dc1b4b68eb45" />
+
 
 `domains` + `verifications`; users already live in Supabase Auth. Constraints and RLS did a lot of the heavy lifting.
 
