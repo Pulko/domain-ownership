@@ -32,6 +32,29 @@ async function requireUserId() {
   return { supabase, userId: data.claims.sub as string };
 }
 
+/**
+ * Ensure the current user owns the given domain before privileged operations
+ * (e.g. DNS verify via admin client).
+ */
+export async function assertUserOwnsDomain(domainId: string): Promise<void> {
+  const { supabase, userId } = await requireUserId();
+
+  const { data: domain, error: domainError } = await supabase
+    .from('domains')
+    .select('id')
+    .eq('id', domainId)
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (domainError) {
+    throw new Error(domainError.message);
+  }
+
+  if (!domain) {
+    throw new DomainError(DomainErrorCode.DOMAIN_NOT_FOUND);
+  }
+}
+
 type DomainRowWithVerification = Domain & {
   current_verification:
     | { failure_reason: string | null; token: string }

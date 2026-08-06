@@ -3,6 +3,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import {
+  deleteDomainAction,
+  regenerateVerificationAction,
+  verifyDomainAction,
+} from '@/app/actions/domains';
 import type { DomainListItem } from '@/lib/data/domains';
 
 type UseDomainActionsOptions = {
@@ -29,18 +34,10 @@ export function useDomainActions({
     setVerifyingId(domain.id);
 
     try {
-      const response = await fetch(`/api/domains/${domain.id}/verify`, {
-        method: 'POST',
-      });
+      const result = await verifyDomainAction(domain.id);
 
-      const data = (await response.json()) as {
-        status?: string;
-        failureReason?: string | null;
-        error?: string;
-      };
-
-      if (!response.ok) {
-        throw new Error(data.error ?? 'Verification failed');
+      if (!result.ok) {
+        throw new Error(result.error);
       }
 
       router.refresh();
@@ -56,25 +53,13 @@ export function useDomainActions({
     setRestartingId(domain.id);
 
     try {
-      const response = await fetch(`/api/domains/${domain.id}/verifications`, {
-        method: 'POST',
-      });
+      const result = await regenerateVerificationAction(domain.id);
 
-      const data = (await response.json()) as {
-        domain?: { id: string; domain: string };
-        txtRecord?: string;
-        error?: string;
-      };
-
-      if (!response.ok) {
-        throw new Error(data.error ?? 'Failed to regenerate verification');
+      if (!result.ok) {
+        throw new Error(result.error);
       }
 
-      if (!data.domain || !data.txtRecord) {
-        throw new Error('Unexpected response from server');
-      }
-
-      onStartOver(data.domain.id);
+      onStartOver(result.domain.id);
       router.refresh();
     } catch (err) {
       setActionError(err instanceof Error ? err.message : 'Failed to regenerate verification');
@@ -88,13 +73,10 @@ export function useDomainActions({
     setDeletingId(domain.id);
 
     try {
-      const response = await fetch(`/api/domains/${domain.id}`, {
-        method: 'DELETE',
-      });
+      const result = await deleteDomainAction(domain.id);
 
-      if (!response.ok) {
-        const data = (await response.json()) as { error?: string };
-        throw new Error(data.error ?? 'Failed to delete domain');
+      if (!result.ok) {
+        throw new Error(result.error);
       }
 
       if (expandedId === domain.id) {

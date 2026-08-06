@@ -38,38 +38,17 @@ export class DomainError extends Error {
   }
 }
 
-function statusForCode(code: DomainErrorCode): number {
-  switch (code) {
-    case DomainErrorCode.UNAUTHORIZED:
-      return 401;
-    case DomainErrorCode.DOMAIN_ALREADY_ADDED:
-      return 409;
-    case DomainErrorCode.DOMAIN_NOT_FOUND:
-    case DomainErrorCode.VERIFICATION_NOT_FOUND:
-      return 404;
-    case DomainErrorCode.DOMAIN_REQUIRED:
-    case DomainErrorCode.INVALID_DOMAIN_FORMAT:
-    case DomainErrorCode.WILDCARD_NOT_SUPPORTED:
-    case DomainErrorCode.IP_NOT_SUPPORTED:
-    case DomainErrorCode.DOMAIN_LENGTH_INVALID:
-    case DomainErrorCode.DOMAIN_FORMAT_INVALID:
-    case DomainErrorCode.NO_ACTIVE_VERIFICATION:
-      return 400;
-    default: {
-      const _exhaustive: never = code;
-      return _exhaustive;
-    }
-  }
-}
+export type ActionFailure = { ok: false; error: string; code?: DomainErrorCode };
 
-export function domainErrorResponse(error: unknown, fallback: string): Response {
+export type ActionResult<T = void> = T extends void
+  ? { ok: true } | ActionFailure
+  : ({ ok: true } & T) | ActionFailure;
+
+export function toActionError(error: unknown, fallback: string): ActionFailure {
   if (error instanceof DomainError) {
-    return Response.json(
-      { error: error.message, code: error.code },
-      { status: statusForCode(error.code) }
-    );
+    return { ok: false, error: error.message, code: error.code };
   }
 
   const message = error instanceof Error ? error.message : fallback;
-  return Response.json({ error: message }, { status: 500 });
+  return { ok: false, error: message };
 }

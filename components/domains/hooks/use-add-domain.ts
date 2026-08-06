@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import type { Domain } from '@/lib/data/domains';
+import { addDomainAction } from '@/app/actions/domains';
 
 type UseAddDomainOptions = {
   onAdded: (domainId: string) => void;
@@ -25,28 +25,14 @@ export function useAddDomain({ onAdded }: UseAddDomainOptions) {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/domains', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ domain }),
-      });
+      const result = await addDomainAction(domain);
 
-      const data = (await response.json()) as {
-        domain?: Domain;
-        txtRecord?: string;
-        error?: string;
-      };
-
-      if (!response.ok) {
-        throw new Error(data.error ?? 'Failed to add domain');
-      }
-
-      if (!data.domain || !data.txtRecord) {
-        throw new Error('Unexpected response from server');
+      if (!result.ok) {
+        throw new Error(result.error);
       }
 
       setDomain('');
-      onAdded(data.domain.id);
+      onAdded(result.domain.id);
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to add domain');
